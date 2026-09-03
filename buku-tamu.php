@@ -89,7 +89,10 @@ if (isset($_POST['simpan'])) {
                                 <td><?= $tamu['kepentingan']; ?></td>
 
                                <td class="text-nowrap">
-    <button class="btn btn-sm btn-success">Ubah</button>
+    <a class="btn btn-sm btn-success" 
+   href="edit-tamu.php?id_tamu=<?= $tamu['id_tamu']; ?>">
+    Ubah
+</a>
     <button class="btn btn-sm btn-danger">Hapus</button>
     </td>
                             </tr>
@@ -166,7 +169,7 @@ $kodeTamu = $huruf . sprintf("%03s", $urutan);
 
          </div>                   
 
-<form method="POST">
+
 
     <!-- Semua input -->
 
