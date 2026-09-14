@@ -2,6 +2,8 @@
 
 require_once('function.php');
 include_once('templates/header.php');
+require_once('koneksi.php');
+
 
 ?>
 
@@ -12,24 +14,24 @@ include_once('templates/header.php');
     <h1 class="h3 mb-4 text-gray-800">Buku Tamu</h1>
 
     <?php
-//jika ada tombol simpan
-if (isset($_POST['simpan'])) {
-    if (tambah_tamu($_POST) > 0) {
-    
-?>
-    <div class="alert alert-success" role="alert">
-        Data Berhasil Disimpan!
-    </div>
-<?php
-   } else { 
-    ?>  
-    <div class="alert alert-danger" role="alert">
-        Data Gagal Disimpan!
-    </div>
-<?php
-   }
-}
-?>
+    //jika ada tombol simpan
+    if (isset($_POST['simpan'])) {
+        if (tambah_tamu($_POST) > 0) {
+
+    ?>
+            <div class="alert alert-success" role="alert">
+                Data Berhasil Disimpan!
+            </div>
+        <?php
+        } else {
+        ?>
+            <div class="alert alert-danger" role="alert">
+                Data Gagal Disimpan!
+            </div>
+    <?php
+        }
+    }
+    ?>
 
 
 
@@ -88,13 +90,18 @@ if (isset($_POST['simpan'])) {
                                 <td><?= $tamu['bertemu']; ?></td>
                                 <td><?= $tamu['kepentingan']; ?></td>
 
-                               <td class="text-nowrap">
-    <a class="btn btn-sm btn-success" 
-   href="edit-tamu.php?id_tamu=<?= $tamu['id_tamu']; ?>">
-    Ubah
-</a>
-    <button class="btn btn-sm btn-danger">Hapus</button>
-    </td>
+                                <td class="text-nowrap">
+                                    <a class="btn btn-sm btn-success"
+                                        href="edit-tamu.php?id_tamu=<?= $tamu['id_tamu']; ?>">
+                                        Ubah
+                                    </a>
+                                    <a onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')" class="btn btn-danger"
+                                    href="hapus-tamu.php?id=<?= $tamu['id_tamu'] ?>">Hapus</a>
+
+
+
+                                </td>
+                            
                             </tr>
 
                         <?php endforeach; ?>
@@ -103,9 +110,9 @@ if (isset($_POST['simpan'])) {
 
                 </table>
 
-            
 
-        </div>
+
+            </div>
 
 
         </div>
@@ -149,101 +156,91 @@ $kodeTamu = $huruf . sprintf("%03s", $urutan);
 
 <!-- Modal -->
 <div class="modal fade" id="tambahModal" tabindex="-1" aria-labelledby="tambahModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="tambahModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        
-        </button>
-      </div>
-      <div class="modal-body">
-      <form method="post" action="">
-         <input type="hidden" name="id_tamu" id="id_tamu" value="<?= $kodeTamu ?>">
-         <div class="form-group row">
-         <label for="nama_tamu" class="col-sm-3 col-form-label">Nama Tamu</label>
-            <div class="col-sm-9">
-                <input type="text" class="form-control" id="nama_tamu" name="nama_tamu" required>                   
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="tambahModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+
+                </button>
             </div>
+            <div class="modal-body">
+                <form method="post" action="">
+                    <input type="hidden" name="id_tamu" id="id_tamu" value="<?= $kodeTamu ?>">
+                    <div class="form-group row">
+                        <label for="nama_tamu" class="col-sm-3 col-form-label">Nama Tamu</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="nama_tamu" name="nama_tamu" required>
+                        </div>
 
-         </div>                   
-
-
-
-    <!-- Semua input -->
-
-    <div class="form-group row">
-        <label for="alamat" class="col-sm-3 col-form-label">Alamat</label>
-
-        <div class="col-sm-9">
-            <input type="text" class="form-control"
-                   id="alamat"
-                   name="alamat"
-                   required>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="no_hp" class="col-sm-3 col-form-label">No. Telepon</label>
-
-        <div class="col-sm-9">
-            <input type="text" class="form-control"
-                   id="no_hp"
-                   name="no_hp"
-                   required>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="bertemu" class="col-sm-3 col-form-label">Bertemu dg.</label>
-
-        <div class="col-sm-9">
-            <input type="text" class="form-control"
-                   id="bertemu"
-                   name="bertemu"
-                   required>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="kepentingan" class="col-sm-3 col-form-label">Kepentingan</label>
-
-        <div class="col-sm-9">
-            <input type="text" class="form-control"
-                   id="kepentingan"
-                   name="kepentingan"
-                   required>
-        </div>
-    </div>
-
-    <div class="modal-footer">
-
-        <button type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal">
-            Close
-        </button>
-
-        <button type="submit"
-                name="simpan"
-                class="btn btn-primary">
-            Simpan
-        </button>
-
-    </div>
-
-</form>
-                        
-                        
+                    </div>
 
 
 
+                    <!-- Semua input -->
 
+                    <div class="form-group row">
+                        <label for="alamat" class="col-sm-3 col-form-label">Alamat</label>
 
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control"
+                                id="alamat"
+                                name="alamat"
+                                required>
+                        </div>
+                    </div>
 
+                    <div class="form-group row">
+                        <label for="no_hp" class="col-sm-3 col-form-label">No. Telepon</label>
 
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control"
+                                id="no_hp"
+                                name="no_hp"
+                                required>
+                        </div>
+                    </div>
 
+                    <div class="form-group row">
+                        <label for="bertemu" class="col-sm-3 col-form-label">Bertemu dg.</label>
+
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control"
+                                id="bertemu"
+                                name="bertemu"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="kepentingan" class="col-sm-3 col-form-label">Kepentingan</label>
+
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control"
+                                id="kepentingan"
+                                name="kepentingan"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                            Close
+                        </button>
+
+                        <button type="submit"
+                            name="simpan"
+                            class="btn btn-primary">
+                            Simpan
+                        </button>
+
+                    </div>
+
+                </form>
 
 
 
@@ -251,8 +248,18 @@ $kodeTamu = $huruf . sprintf("%03s", $urutan);
 
 
 
-<?php
 
-include_once('templates/footer.php');
 
-?>
+
+
+
+
+
+
+
+
+                <?php
+
+                include_once('templates/footer.php');
+
+                ?>
