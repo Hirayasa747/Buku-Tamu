@@ -69,7 +69,7 @@
             </li>
 
              <li class="nav-item">
-                <a class="nav-link" href="user.php">
+                <a class="nav-link" href="users.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>User</span></a>
             </li>
