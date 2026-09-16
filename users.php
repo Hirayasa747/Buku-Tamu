@@ -16,7 +16,7 @@ require_once('koneksi.php');
     <?php
     //jika ada tombol simpan
     if (isset($_POST['simpan'])) {
-        if (tambah_tamu($_POST) > 0) {
+        if (tambah_user($_POST) > 0) {
 
     ?>
             <div class="alert alert-success" role="alert">
@@ -71,7 +71,7 @@ require_once('koneksi.php');
                         // Penomoran auto-increment
                         $no = 1;
 
-                        // Query untuk menampilkan data dari tabel buku_tamu
+                        // Query untuk menampilkan data dari tabel buku_user
                         $users = query("SELECT * FROM users");
 
                         foreach ($users as $user) :
@@ -114,12 +114,12 @@ require_once('koneksi.php');
 
 <?php
 //mengambil data barang dari tabel dengan kode barang terbesar
-$query = mysqli_query($koneksi, "SELECT max(id_tamu) as kodeTerbesar FROM buku_tamu");
+$query = mysqli_query($koneksi, "SELECT max(id_user) as kodeTerbesar FROM users");
 $data = mysqli_fetch_array($query);
-$kodeTamu = $data['kodeTerbesar'];
+$kodeuser = $data['kodeTerbesar'];
 
 //mengambil angka dari kode barang terbesar, menggunakan fungsi substr dan diubah ke integer dengan (int)
-$urutan = (int) substr($kodeTamu, 2, 3);
+$urutan = (int) substr($kodeuser, 3, 2);
 
 //nomor yang diambil akan ditambah 1 untuk menentukan nomor urut berikutnya
 $urutan++;
@@ -128,8 +128,8 @@ $urutan++;
 //sprintf("%03s", $urutan); berfungsi untuk membuat string menjadi 3 karakter, misalnya perintah sprintf("%03s", 15); maka akan menghasilkan '015', jika sprintf("%03s", 1); maka akan menghasilkan '001'
 
 //angka yang diambil tadi digabungkan dengan kode huruf yang kita inginkan, misalnya zt
-$huruf = "zt";
-$kodeTamu = $huruf . sprintf("%03s", $urutan);
+$huruf = "usr";
+$kodeuser = $huruf . sprintf("%03s", $urutan);
 
 
 ?>
@@ -156,11 +156,11 @@ $kodeTamu = $huruf . sprintf("%03s", $urutan);
             </div>
             <div class="modal-body">
                 <form method="post" action="">
-                    <input type="hidden" name="id_tamu" id="id_tamu" value="<?= $kodeTamu ?>">
+                    <input type="hidden" name="id_user" id="id_user" value="<?= $kodeuser ?>">
                     <div class="form-group row">
-                        <label for="nama_tamu" class="col-sm-3 col-form-label">Nama Tamu</label>
+                        <label for="username" class="col-sm-3 col-form-label">Username</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="nama_tamu" name="nama_tamu" required>
+                            <input type="text" class="form-control" id="username" name="username" required>
                         </div>
 
                     </div>
@@ -170,48 +170,29 @@ $kodeTamu = $huruf . sprintf("%03s", $urutan);
                     <!-- Semua input -->
 
                     <div class="form-group row">
-                        <label for="alamat" class="col-sm-3 col-form-label">Alamat</label>
+                        <label for="password" class="col-sm-3 col-form-label">Password</label>
 
                         <div class="col-sm-9">
-                            <input type="text" class="form-control"
-                                id="alamat"
-                                name="alamat"
+                            <input type="password" class="form-control"
+                                id="password"
+                                name="password"
                                 required>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="no_hp" class="col-sm-3 col-form-label">No. Telepon</label>
+                        <label for="user_role" class="col-sm-3 col-form-label">User Role</label>
 
                         <div class="col-sm-9">
-                            <input type="text" class="form-control"
-                                id="no_hp"
-                                name="no_hp"
-                                required>
+                            <select class="form-control" id="user_role" name="user_role">
+                            <option value="admin">Administrator</option>    
+                            <option value="operator">Operator</option>  
+
+                            </select>
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="bertemu" class="col-sm-3 col-form-label">Bertemu dg.</label>
-
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control"
-                                id="bertemu"
-                                name="bertemu"
-                                required>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="kepentingan" class="col-sm-3 col-form-label">Kepentingan</label>
-
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control"
-                                id="kepentingan"
-                                name="kepentingan"
-                                required>
-                        </div>
-                    </div>
+                 
 
                     <div class="modal-footer">
 
