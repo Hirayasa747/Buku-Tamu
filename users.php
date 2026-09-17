@@ -84,7 +84,7 @@ require_once('koneksi.php');
 
                                 <td class="text-nowrap">
                                     <a class="btn btn-sm btn-success"
-                                        href="edit-user.php?id=<?= $user['id_user']; ?>">
+                                        href="edit-user.php?id_user=<?= $user['id_user']; ?>">
                                         Ubah
                                     </a>
                                     <a onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')" class="btn btn-danger"
