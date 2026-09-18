@@ -91,7 +91,7 @@ require_once('koneksi.php');
                                 <td><?= $tamu['kepentingan']; ?></td>
 
                                 <td class="text-nowrap">
-                                    <a class="btn btn-sm btn-success"
+                                    <a class="btn  btn-success"
                                         href="edit-tamu.php?id_tamu=<?= $tamu['id_tamu']; ?>">
                                         Ubah
                                     </a>
