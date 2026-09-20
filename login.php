@@ -1,6 +1,12 @@
 <?php
-
+session_start();
 require 'koneksi.php';
+
+// Jika sudah login, langsung lempar ke index.php
+if (isset($_SESSION['login'])) {
+    header('Location: index.php');
+    exit;
+}
 
 if (isset($_POST['login'])) {
     $username = $_POST['username'];
@@ -18,11 +24,17 @@ if (isset($_POST['login'])) {
 
         // Cek apakah password benar
         if (password_verify($password, $row['password'])) {
-            header("Location: index.php");
+            // Set session
+            $_SESSION['login'] = true;
+            $_SESSION['username'] = $username;
+
+            // Redirect ke halaman utama setelah login berhasil
+            header('Location: index.php');
             exit;
         }
     }
 
+    // Jika username tidak ditemukan atau password salah
     $error = true;
 }
 ?>

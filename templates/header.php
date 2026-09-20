@@ -1,3 +1,18 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['login'])) {
+    header('Location: login.php');
+    exit;
+}
+?>
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -79,6 +94,16 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
+
+            <?php
+            if(isset($_SESSION['login'])) :
+            ?>
+            <li class="nav-item">
+                <a class = "nav-link" href="logout.php">        
+                    <i class="fas fa-fw fa-power-off"></i>
+                    <span>Logout</span></a>
+            </li>    
+            <?php endif; ?>    
 
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">
