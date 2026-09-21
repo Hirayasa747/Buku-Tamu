@@ -8,9 +8,27 @@ if (!isset($_SESSION['login'])) {
 ?>
 
 
+<ul class="nav"> 
+  <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'operator') : ?>
+    <li class="nav-item">
+      <a class="nav-link" href="buku-tamu.php">
+        <i class="fas fa-fw fa-book-open"></i>
+        <span>Buku Tamu</span>
+      </a>
+    </li>
+  <?php endif; ?>
+</ul>
 
-
-
+<ul class="nav"> 
+<?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
+  <li class="nav-item">
+    <a class="nav-link" href="users.php">
+      <i class="fas fa-fw fa-user"></i>
+      <span>User</span>
+    </a>
+  </li>
+<?php endif; ?>
+</ul>
 
 
 <!DOCTYPE html>

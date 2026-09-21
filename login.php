@@ -27,7 +27,9 @@ if (isset($_POST['login'])) {
             // Set session
             $_SESSION['login'] = true;
             $_SESSION['username'] = $username;
+             $_SESSION['role'] = $row['user_role'];
 
+             
             // Redirect ke halaman utama setelah login berhasil
             header('Location: index.php');
             exit;
