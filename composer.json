@@ -1,0 +1,6 @@
+{
+    "name": "hypeamd/buku-tamu",
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.10"
+    }
+}

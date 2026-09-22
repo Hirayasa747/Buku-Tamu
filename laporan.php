@@ -6,6 +6,23 @@
 require 'function.php'; 
 ?>
 
+<?php
+include_once('templates/header.php');
+
+if (isset($_POST['tampilkan'])) {
+    $p_awal = $_POST['p_awal'];
+    $p_akhir = $_POST['p_akhir'];
+
+    $link = "export-laporan.php?cari=true&p_awal=$p_awal&p_akhir=$p_akhir";
+    // query sesuai dengan keyword
+    $buku_tamu = query("SELECT * FROM buku_tamu WHERE tanggal BETWEEN '$p_awal' AND '$p_akhir' ");
+} else {
+    // query ambil semua data buku tamu
+    $buku_tamu = query("SELECT * FROM buku_tamu ORDER BY tanggal DESC");
+}
+?>
+
+
 
   <!-- Begin Page Content -->
   <div class="container-fluid">
@@ -61,7 +78,12 @@ require 'function.php';
 
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <span class="text">Tabel Histori Tamu</span>
+        <a href="<?= isset($_POST['tampilkan']) ? $link : 'export-laporan.php'; ?>" target="_blank" class="btn btn-success btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-file-excel"></i>
+            </span>
+            <span class="text">Export Laporan</span>
+        </a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -78,19 +100,13 @@ require 'function.php';
                         <th>Aksi</th>
                     </tr>
                 </thead>
+                
                 <tbody>
 
                 <?php
-    if (isset($_POST['tampilkan'])) {
-        $p_awal = $_POST['p_awal'];
-        $p_akhir = $_POST['p_akhir'];
-        // penomoran auto-increment
-       
-        $no = 1;
-       
-        // Query untuk memanggil semua data dari tabel buku_tamu
-       
-        $buku_tamu = query("SELECT * FROM buku_tamu WHERE tanggal BETWEEN '$p_awal' AND '$p_akhir' ");
+                 //penomoran auto increment
+                 $no = 1;
+        
         foreach ($buku_tamu as $tamu) : ?>
             <tr>
                 <td><?= $no++; ?></td>
@@ -106,13 +122,13 @@ require 'function.php';
         </td
            
     </tr>
+    
     <?php endforeach;
-    }
     ?>
 
 
-
-                </tbody>
+    </tbody>
+            
             </table>
         </div>
     </div>
