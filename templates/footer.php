@@ -1,9 +1,5 @@
  
             <!-- End of Main Content -->
-<html>
-<body>
-
-
 
 
             <!-- Footer -->

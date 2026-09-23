@@ -4,9 +4,9 @@ require_once('function.php');
 include_once('templates/header.php');
 require_once('koneksi.php');
 
-if(($_SESSION['role']) != 'operator') {
-    echo"<script>alert('anda tidak memiliki akses')</script>";
-    echo"<script>window.location.href='index.php'</script>";
+if (($_SESSION['role']) != 'operator') {
+    echo "<script>alert('anda tidak memiliki akses')</script>";
+    echo "<script>window.location.href='index.php'</script>";
 }
 ?>
 
@@ -101,12 +101,12 @@ if(($_SESSION['role']) != 'operator') {
                                         Ubah
                                     </a>
                                     <a onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')" class="btn btn-danger"
-                                    href="hapus-tamu.php?id=<?= $tamu['id_tamu'] ?>">Hapus</a>
+                                        href="hapus-tamu.php?id=<?= $tamu['id_tamu'] ?>">Hapus</a>
 
 
 
                                 </td>
-                            
+
                             </tr>
 
                         <?php endforeach; ?>
@@ -165,13 +165,12 @@ $kodeTamu = $huruf . sprintf("%03s", $urutan);
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="tambahModalLabel">Modal title</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
-
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" action="">
+                <form method="post" action="" enctype="multipart/form-data">
                     <input type="hidden" name="id_tamu" id="id_tamu" value="<?= $kodeTamu ?>">
                     <div class="form-group row">
                         <label for="nama_tamu" class="col-sm-3 col-form-label">Nama Tamu</label>
@@ -229,11 +228,26 @@ $kodeTamu = $huruf . sprintf("%03s", $urutan);
                         </div>
                     </div>
 
+
+                    <div class="form-group row">
+                        <label for="gambar" class="col-sm-3 col-form-label">Unggah Foto</label>
+                        <div class="custom-file col-sm-8">
+                            <input type="file" class="custom-file-input" id="gambar" name="gambar">
+                            <label class="custom-file-label" for="gambar">Chose File</label>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
                     <div class="modal-footer">
 
                         <button type="button"
                             class="btn btn-secondary"
-                            data-bs-dismiss="modal">
+                            data-dismiss="modal">
                             Close
                         </button>
 
