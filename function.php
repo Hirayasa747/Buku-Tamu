@@ -1,16 +1,33 @@
 <?php
 // panggil file koneksi.php
-require_once ('koneksi.php');
+require_once('koneksi.php');
 
 //membuat query ke/ database
-function query($query){
+function query($query)
+{
     global $koneksi;
     $result = mysqli_query($koneksi, $query);
     $rows = [];
-    while ($row = mysqli_fetch_assoc($result)){
+    while ($row = mysqli_fetch_assoc($result)) {
         $rows[] = $row;
     }
     return $rows;
+}
+
+// fungsi untuk generate kode tamu baru berdasarkan data terakhir di database
+function generate_kode_tamu()
+{
+    global $koneksi;
+
+    $query = mysqli_query($koneksi, "SELECT id_tamu FROM buku_tamu ORDER BY id_tamu DESC LIMIT 1");
+    $data = mysqli_fetch_assoc($query);
+
+    $kodeTerakhir = $data['id_tamu'] ?? null;
+    $urutan = $kodeTerakhir ? (int) substr($kodeTerakhir, 2, 3) : 0;
+    $urutan++;
+
+    $huruf = "zt";
+    return $huruf . sprintf("%03s", $urutan);
 }
 
 // fungsi untuk menambahkan data tamu
@@ -18,28 +35,41 @@ function tambah_tamu($data)
 {
     global $koneksi;
 
-    $kode   =htmlspecialchars($data['id_tamu']);
-    $tanggal =date('Y-m-d');
-    $nama_tamu   =htmlspecialchars($data['nama_tamu']);
-    $alamat =htmlspecialchars($data['alamat']);
-    $no_hp =htmlspecialchars($data['no_hp']);
-    $bertemu =htmlspecialchars($data['bertemu']);
-    $kepentingan =htmlspecialchars($data['kepentingan']);
-
+    $tanggal     = date('Y-m-d');
+    $nama_tamu   = htmlspecialchars($data['nama_tamu']);
+    $alamat      = htmlspecialchars($data['alamat']);
+    $no_hp       = htmlspecialchars($data['no_hp']);
+    $bertemu     = htmlspecialchars($data['bertemu']);
+    $kepentingan = htmlspecialchars($data['kepentingan']);
 
     //upload gambar
     $gambar = uploadGambar();
-   if (!$gambar) {
+    if (!$gambar) {
         return false;
+    }
 
-   }
-
-
-    $query = "INSERT INTO buku_tamu VALUES ('$kode', '$tanggal', '$nama_tamu', '$alamat', '$no_hp', '$bertemu', '$kepentingan', '$gambar')";
     
-    mysqli_query($koneksi, $query);
+    $maxRetry = 5;
+    for ($i = 0; $i < $maxRetry; $i++) {
+        $kode = generate_kode_tamu();
+
+        $query = "INSERT INTO buku_tamu (id_tamu, tanggal, nama_tamu, alamat, no_hp, bertemu, kepentingan, gambar)
+                   VALUES ('$kode', '$tanggal', '$nama_tamu', '$alamat', '$no_hp', '$bertemu', '$kepentingan', '$gambar')";
+
+        try {
+            mysqli_query($koneksi, $query);
+            return mysqli_affected_rows($koneksi);
+        } catch (mysqli_sql_exception $e) {
+           
+            if (!str_contains($e->getMessage(), 'Duplicate entry')) {
+                throw $e;
+            }
+          
+        }
+    }
+
     
-    return mysqli_affected_rows($koneksi);
+    return false;
 }
 
 // fungsi untuk ubah data tamu
@@ -47,31 +77,41 @@ function ubah_tamu($data)
 {
     global $koneksi;
 
-
-    $id = htmlspecialchars($data['id_tamu']);
-    $nama_tamu = htmlspecialchars($data['nama_tamu']);
-    $alamat = htmlspecialchars($data['alamat']);
-    $no_hp = htmlspecialchars($data['no_hp']);
-    $bertemu = htmlspecialchars($data['bertemu']);
+    $id          = htmlspecialchars($data['id_tamu']);
+    $nama_tamu   = htmlspecialchars($data['nama_tamu']);
+    $alamat      = htmlspecialchars($data['alamat']);
+    $no_hp       = htmlspecialchars($data['no_hp']);
+    $bertemu     = htmlspecialchars($data['bertemu']);
     $kepentingan = htmlspecialchars($data['kepentingan']);
+    $gambarlama  = htmlspecialchars($data['gambarlama']);
+
+    if ($_FILES['gambar']['error'] === 4) {
+        $gambar = $gambarlama;
+    } else {
+        $gambar = uploadGambar();
+        if (!$gambar) {
+            $gambar = $gambarlama;
+        }
+    }
 
     $query = "UPDATE buku_tamu SET 
-                nama_tamu = '$nama_tamu',
-                alamat = '$alamat',
-                no_hp = '$no_hp',
-                bertemu = '$bertemu',
-                kepentingan = '$kepentingan'
+                nama_tamu   = '$nama_tamu',
+                alamat      = '$alamat',
+                no_hp       = '$no_hp',
+                bertemu     = '$bertemu',
+                kepentingan = '$kepentingan',
+                gambar      = '$gambar'
               WHERE id_tamu = '$id'";
 
     mysqli_query($koneksi, $query);
 
     return mysqli_affected_rows($koneksi);
-
 }
 
 
 //function hapus data tamu
-function hapus_tamu($id) {
+function hapus_tamu($id)
+{
     global $koneksi;
 
     $query = "DELETE FROM buku_tamu WHERE id_tamu = '$id'";
@@ -79,30 +119,29 @@ function hapus_tamu($id) {
     mysqli_query($koneksi, $query);
 
     return mysqli_affected_rows($koneksi);
-
-
 }
 
-function tambah_user($data) {
+function tambah_user($data)
+{
     global $koneksi;
 
- $kode  = htmlspecialchars($data['id_user']);
- $username = htmlspecialchars($data['username']);
- $password = htmlspecialchars($data['password']);
- $user_role = htmlspecialchars($data['user_role']);
+    $kode  = htmlspecialchars($data['id_user']);
+    $username = htmlspecialchars($data['username']);
+    $password = htmlspecialchars($data['password']);
+    $user_role = htmlspecialchars($data['user_role']);
 
-//enkripsi password dengan password_hash
-$password_hash = password_hash($password,PASSWORD_DEFAULT);
+    //enkripsi password dengan password_hash
+    $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-$query = "INSERT INTO users VALUES ('$kode', '$username', '$password_hash', '$user_role')";
+    $query = "INSERT INTO users VALUES ('$kode', '$username', '$password_hash', '$user_role')";
 
-mysqli_query($koneksi, $query);
+    mysqli_query($koneksi, $query);
 
-return mysqli_affected_rows($koneksi);
-
+    return mysqli_affected_rows($koneksi);
 }
 
-function ubah_user($data) {
+function ubah_user($data)
+{
     global $koneksi;
 
     $kode  = htmlspecialchars($data['id_user']);
@@ -114,33 +153,33 @@ function ubah_user($data) {
               user_role     =  '$user_role'
               WHERE id_user = '$kode'";
 
-        mysqli_query($koneksi, $query);
+    mysqli_query($koneksi, $query);
 
-        return mysqli_affected_rows($koneksi);
-
+    return mysqli_affected_rows($koneksi);
 }
 
 
 //function hapus data user
-function hapus_user($id) {
-global $koneksi;
+function hapus_user($id)
+{
+    global $koneksi;
 
-$query = "DELETE FROM users  WHERE id_user = '$id'";
+    $query = "DELETE FROM users  WHERE id_user = '$id'";
 
-mysqli_query($koneksi, $query);
+    mysqli_query($koneksi, $query);
 
-  return mysqli_affected_rows($koneksi);
-
+    return mysqli_affected_rows($koneksi);
 }
 
 //function ganti password user
-function ganti_password($data) {
-global $koneksi;
- $kode      = htmlspecialchars($data['id_user']);
- $password  = htmlspecialchars($data['password']);
-$password_hash  = password_hash($password,PASSWORD_DEFAULT);
+function ganti_password($data)
+{
+    global $koneksi;
+    $kode      = htmlspecialchars($data['id_user']);
+    $password  = htmlspecialchars($data['password']);
+    $password_hash  = password_hash($password, PASSWORD_DEFAULT);
 
-$query = "UPDATE users SET
+    $query = "UPDATE users SET
          password       = '$password_hash'
          WHERE id_user    =   '$kode'";
 
@@ -148,23 +187,18 @@ $query = "UPDATE users SET
 
 
     return mysqli_affected_rows($koneksi);
-
-} 
-
-
-
-
+}
 
 
 function uploadGambar()
 {
-    // ambil data file gambar dari variable $_FILES
+   
     $namaFile = $_FILES['gambar']['name'];
     $ukuranFile = $_FILES['gambar']['size'];
     $error = $_FILES['gambar']['error'];
     $tmpName = $_FILES['gambar']['tmp_name'];
 
-    // cek apakah tidak ada gambar yang diunggah
+  
     if ($error == 4) {
         echo "<script>
                 alert('pilih gambar terlebih dahulu!');
@@ -172,7 +206,6 @@ function uploadGambar()
         return false;
     }
 
-    // cek apakah yang diunggah adalah gambar
     $ekstensiGambarValid = ['jpg', 'jpeg', 'png'];
     $ekstensiGambar = explode('.', $namaFile);
     $ekstensiGambar = strtolower(end($ekstensiGambar));
@@ -184,7 +217,7 @@ function uploadGambar()
         return false;
     }
 
-    // cek jika ukurannya terlalu besar
+   
     if ($ukuranFile > 1000000) {
         echo "<script>
                 alert('Ukuran gambar terlalu besar!');
@@ -192,8 +225,7 @@ function uploadGambar()
         return false;
     }
 
-    // jika lolos pengecekan, gambar akan diunggah
-    // generate nama gambar baru untuk diupload
+   
     $namaFileBaru = uniqid();
     $namaFileBaru .= '.';
     $namaFileBaru .= $ekstensiGambar;

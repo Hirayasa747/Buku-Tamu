@@ -1,35 +1,46 @@
 <?php
 
 require_once('function.php');
-include_once('templates/header.php');
 require_once('koneksi.php');
 
+session_start();
+
 if (($_SESSION['role']) != 'operator') {
+    include_once('templates/header.php'); // baru include di sini kalau mau tampilkan halaman
     echo "<script>alert('anda tidak memiliki akses')</script>";
     echo "<script>window.location.href='index.php'</script>";
+    exit;
 }
+
+// Proses simpan HARUS di atas, sebelum header.php di-include
+if (isset($_POST['simpan'])) {
+    if (tambah_tamu($_POST) > 0) {
+        header('Location: buku-tamu.php?status=sukses');
+    } else {
+        header('Location: buku-tamu.php?status=gagal');
+    }
+    exit;
+}
+
+// Baru include header.php SETELAH semua kemungkinan redirect selesai
+include_once('templates/header.php');
 ?>
-
-
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-    <!-- Page Heading -->
     <h1 class="h3 mb-4 text-gray-800">Buku Tamu</h1>
 
     <?php
-    //jika ada tombol simpan
-    if (isset($_POST['simpan'])) {
-        if (tambah_tamu($_POST) > 0) {
-
+    if (isset($_GET['status'])) {
+        if ($_GET['status'] === 'sukses') {
     ?>
             <div class="alert alert-success" role="alert">
                 Data Berhasil Disimpan!
             </div>
-        <?php
-        } else {
-        ?>
+    <?php
+        } elseif ($_GET['status'] === 'gagal') {
+    ?>
             <div class="alert alert-danger" role="alert">
                 Data Gagal Disimpan!
             </div>
@@ -37,7 +48,7 @@ if (($_SESSION['role']) != 'operator') {
         }
     }
     ?>
-
+    <!-- lanjutan kode tabel dst tetap sama -->
 
 
 
